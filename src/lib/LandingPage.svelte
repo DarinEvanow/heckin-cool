@@ -1,34 +1,24 @@
 <script lang="ts">
-	import {
-		CircleBufferGeometry,
-		MeshStandardMaterial,
-		MeshPhongMaterial,
-		BoxBufferGeometry,
-		DoubleSide,
-		ShaderMaterial,
-		MeshLambertMaterial,
-		PlaneBufferGeometry
-	} from 'three';
+	import { l, MeshPhongMaterial, PlaneBufferGeometry } from 'three';
 	import type { Shader } from 'three';
-	import { DEG2RAD } from 'three/src/math/MathUtils';
 	import {
 		AmbientLight,
-		Canvas,
 		DirectionalLight,
 		Group,
 		Mesh,
-		OrbitControls,
 		PerspectiveCamera,
 		useFrame
 	} from '@threlte/core';
+	import { Text } from '@threlte/extras';
 	import { spring } from 'svelte/motion';
 
 	const scale = spring(1);
+	const title = "Heckin'\nCool";
 
 	const water = new MeshPhongMaterial({
 		color: 'blue',
 		transparent: true,
-		opacity: 0.5
+		opacity: 0.7
 	});
 
 	let waterShader: Shader;
@@ -64,34 +54,28 @@
 	});
 </script>
 
-<PerspectiveCamera position={{ x: 15, y: 15, z: 15 }} fov={24}>
-	<OrbitControls
-		maxPolarAngle={DEG2RAD * 80}
-		autoRotate={false}
-		enableZoom={false}
-		target={{ y: 0.5 }}
-	/>
-</PerspectiveCamera>
-
+<PerspectiveCamera position={{ x: 15, y: 15, z: 15 }} fov={24} lookAt={{ x: 0, y: 0, z: 0 }} />
 <DirectionalLight shadow position={{ x: 3, y: 10, z: 10 }} />
 <AmbientLight intensity={0.666} />
 
-<!-- Cube -->
+<!-- Text -->
 <Group scale={$scale}>
-	<Mesh
+	<Text
 		interactive
 		on:pointerenter={() => ($scale = 2)}
 		on:pointerleave={() => ($scale = 1)}
-		position={{ y: 0.5 }}
-		castShadow
-		geometry={new BoxBufferGeometry(1, 1, 1)}
-		material={new MeshStandardMaterial({ color: '#333333' })}
+		position={{ y: 4 }}
+		fontSize={1}
+		color="#ff00c1"
+		rotation={{ y: Math.PI / 4 }}
+		anchorX="center"
+		text={title}
+		textAlign="center"
 	/>
 </Group>
 
 <!-- Water -->
 <Mesh
-	receiveShadow
 	rotation={{ x: -90 * (Math.PI / 180) }}
 	geometry={new PlaneBufferGeometry(20, 20, 100, 100)}
 	material={water}
