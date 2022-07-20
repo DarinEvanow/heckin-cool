@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import {
 		CircleBufferGeometry,
 		MeshStandardMaterial,
@@ -6,8 +6,10 @@
 		BoxBufferGeometry,
 		DoubleSide,
 		ShaderMaterial,
-		MeshLambertMaterial
+		MeshLambertMaterial,
+		PlaneBufferGeometry
 	} from 'three';
+	import type { Shader } from 'three';
 	import { DEG2RAD } from 'three/src/math/MathUtils';
 	import {
 		AmbientLight,
@@ -23,15 +25,15 @@
 
 	const scale = spring(1);
 
-	const mat = new MeshLambertMaterial({
-		color: 'green',
+	const water = new MeshPhongMaterial({
+		color: 'blue',
 		transparent: true,
 		opacity: 0.5
 	});
 
-	let matShader;
+	let waterShader: Shader;
 
-	mat.onBeforeCompile = (shader) => {
+	water.onBeforeCompile = (shader) => {
 		shader.uniforms.time = { value: 0 };
 		shader.vertexShader =
 			`
@@ -40,24 +42,29 @@
 
 		const token = '#include <begin_vertex>';
 		const customTransform = `
-        vec3 transformed = vec3(position);
-        float freq = 3.0;
-        float amp = 0.1;
-        float angle = (time + position.x)*freq;
-        transformed.z += sin(angle)*amp;
+			vec3 transformed = vec3(position);
+			float dx = position.x;
+			float dy = position.y;
+			float freq = sqrt(dx*dx + dy*dy);
+			float amp = 0.1;
+			float angle = -time*10.0+freq*6.0;
+			transformed.z += sin(angle)*amp;
+
+			objectNormal = normalize(vec3(0.0,-amp * freq * cos(angle),1.0));
+			vNormal = normalMatrix * objectNormal;
     `;
 		shader.vertexShader = shader.vertexShader.replace(token, customTransform);
-		matShader = shader;
+		waterShader = shader;
 	};
 
 	let morph = 0;
 
 	useFrame(() => {
-		if (matShader) matShader.uniforms.time.value = morph++ * 0.05;
+		if (waterShader) waterShader.uniforms.time.value = morph++ / 100;
 	});
 </script>
 
-<PerspectiveCamera position={{ x: 10, y: 10, z: 10 }} fov={24}>
+<PerspectiveCamera position={{ x: 15, y: 15, z: 15 }} fov={24}>
 	<OrbitControls
 		maxPolarAngle={DEG2RAD * 80}
 		autoRotate={false}
@@ -67,8 +74,7 @@
 </PerspectiveCamera>
 
 <DirectionalLight shadow position={{ x: 3, y: 10, z: 10 }} />
-<DirectionalLight position={{ x: -3, y: 10, z: -10 }} intensity={0.2} />
-<AmbientLight intensity={0.2} />
+<AmbientLight intensity={0.666} />
 
 <!-- Cube -->
 <Group scale={$scale}>
@@ -87,6 +93,6 @@
 <Mesh
 	receiveShadow
 	rotation={{ x: -90 * (Math.PI / 180) }}
-	geometry={new CircleBufferGeometry(3, 72)}
-	material={mat}
+	geometry={new PlaneBufferGeometry(20, 20, 100, 100)}
+	material={water}
 />
