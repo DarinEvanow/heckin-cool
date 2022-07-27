@@ -39,20 +39,20 @@
 	const donutGeometry = new TorusGeometry(0.3, 0.2, 20, 45);
 </script>
 
-<PerspectiveCamera position={{ x: 15, y: 15, z: 15 }} fov={24} lookAt={{ x: 0, y: 0, z: 0 }}>
-	<OrbitControls />
+<PerspectiveCamera position={{ x: 5, y: 5, z: 15 }} fov={24} lookAt={{ x: 0, y: 0, z: 0 }}>
+	<OrbitControls enableZoom={false} />
 </PerspectiveCamera>
 
 <Mesh geometry={textGeometry} {material} />
-{#each Array(100) as _}
+{#each Array(150) as _}
 	<Float speed={2}>
 		<Mesh
 			geometry={donutGeometry}
 			{material}
 			position={{
-				x: (Math.random() - 0.5) * 10,
-				y: (Math.random() - 0.5) * 10,
-				z: (Math.random() - 0.5) * 10
+				x: (Math.random() - 0.5) * 13,
+				y: (Math.random() - 0.5) * 13,
+				z: (Math.random() - 0.5) * 13
 			}}
 			rotation={{ x: Math.random() * Math.PI, y: Math.random() * Math.PI }}
 			scale={Math.random()}
