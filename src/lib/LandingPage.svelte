@@ -1,82 +1,58 @@
 <script lang="ts">
-	import { l, MeshPhongMaterial, PlaneBufferGeometry } from 'three';
-	import type { Shader } from 'three';
-	import {
-		AmbientLight,
-		DirectionalLight,
-		Group,
-		Mesh,
-		PerspectiveCamera,
-		useFrame
-	} from '@threlte/core';
-	import { Text } from '@threlte/extras';
-	import { spring } from 'svelte/motion';
+	import { MeshMatcapMaterial, TextureLoader, TorusGeometry } from 'three';
+	import { FontLoader } from 'three/examples/jsm/loaders/FontLoader';
+	import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry';
+	import { Mesh, PerspectiveCamera, OrbitControls } from '@threlte/core';
 
-	const scale = spring(1);
-	const title = "Heckin'\nCool";
+	/**
+	 * Textures
+	 */
+	const textureLoader = new TextureLoader();
+	const matcapTexture = textureLoader.load('/textures/matcap.png');
 
-	const water = new MeshPhongMaterial({
-		color: 'blue',
-		transparent: true,
-		opacity: 0.7
+	/**
+	 * Fonts
+	 */
+
+	const fontLoader = new FontLoader();
+
+	let textGeometry: TextGeometry;
+
+	fontLoader.load('/fonts/gentilis_regular.typeface.json', (font) => {
+		textGeometry = new TextGeometry("Heckin' Cool", {
+			font: font,
+			size: 0.5,
+			height: 0.2,
+			curveSegments: 12,
+			bevelEnabled: true,
+			bevelThickness: 0.03,
+			bevelSize: 0.02,
+			bevelOffset: 0,
+			bevelSegments: 5
+		});
+
+		textGeometry.center();
 	});
 
-	let waterShader: Shader;
-
-	water.onBeforeCompile = (shader) => {
-		shader.uniforms.time = { value: 0 };
-		shader.vertexShader =
-			`
-        uniform float time;
-    ` + shader.vertexShader;
-
-		const token = '#include <begin_vertex>';
-		const customTransform = `
-			vec3 transformed = vec3(position);
-			float dx = position.x;
-			float dy = position.y;
-			float freq = sqrt(dx*dx + dy*dy);
-			float amp = 0.1;
-			float angle = -time*10.0+freq*6.0;
-			transformed.z += sin(angle)*amp;
-
-			objectNormal = normalize(vec3(0.0,-amp * freq * cos(angle),1.0));
-			vNormal = normalMatrix * objectNormal;
-    `;
-		shader.vertexShader = shader.vertexShader.replace(token, customTransform);
-		waterShader = shader;
-	};
-
-	let morph = 0;
-
-	useFrame(() => {
-		if (waterShader) waterShader.uniforms.time.value = morph++ / 100;
-	});
+	const material = new MeshMatcapMaterial({ matcap: matcapTexture });
+	const donutGeometry = new TorusGeometry(0.3, 0.2, 20, 45);
 </script>
 
-<PerspectiveCamera position={{ x: 15, y: 15, z: 15 }} fov={24} lookAt={{ x: 0, y: 0, z: 0 }} />
-<DirectionalLight shadow position={{ x: 3, y: 10, z: 10 }} />
-<AmbientLight intensity={0.666} />
+<PerspectiveCamera position={{ x: 15, y: 15, z: 15 }} fov={24} lookAt={{ x: 0, y: 0, z: 0 }}>
+	<OrbitControls />
+</PerspectiveCamera>
 
-<!-- Text -->
-<Group scale={$scale}>
-	<Text
-		interactive
-		on:pointerenter={() => ($scale = 2)}
-		on:pointerleave={() => ($scale = 1)}
-		position={{ y: 4 }}
-		fontSize={1}
-		color="#ff00c1"
-		rotation={{ y: Math.PI / 4 }}
-		anchorX="center"
-		text={title}
-		textAlign="center"
+<Mesh geometry={textGeometry} {material} />
+{#each Array(100) as _}
+	<Mesh
+		geometry={donutGeometry}
+		{material}
+		position={{
+			x: (Math.random() - 0.5) * 10,
+			y: (Math.random() - 0.5) * 10,
+			z: (Math.random() - 0.5) * 10
+		}}
+		rotation={{ x: Math.random() * Math.PI, y: Math.random() * Math.PI }}
+		scale={Math.random()}
 	/>
-</Group>
-
-<!-- Water -->
-<Mesh
-	rotation={{ x: -90 * (Math.PI / 180) }}
-	geometry={new PlaneBufferGeometry(20, 20, 100, 100)}
-	material={water}
-/>
+{/each}
