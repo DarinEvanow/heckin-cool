@@ -3,6 +3,7 @@
 	import { FontLoader } from 'three/examples/jsm/loaders/FontLoader';
 	import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry';
 	import { Mesh, PerspectiveCamera, OrbitControls } from '@threlte/core';
+	import { Float } from '@threlte/extras';
 
 	/**
 	 * Textures
@@ -44,15 +45,17 @@
 
 <Mesh geometry={textGeometry} {material} />
 {#each Array(100) as _}
-	<Mesh
-		geometry={donutGeometry}
-		{material}
-		position={{
-			x: (Math.random() - 0.5) * 10,
-			y: (Math.random() - 0.5) * 10,
-			z: (Math.random() - 0.5) * 10
-		}}
-		rotation={{ x: Math.random() * Math.PI, y: Math.random() * Math.PI }}
-		scale={Math.random()}
-	/>
+	<Float speed={2}>
+		<Mesh
+			geometry={donutGeometry}
+			{material}
+			position={{
+				x: (Math.random() - 0.5) * 10,
+				y: (Math.random() - 0.5) * 10,
+				z: (Math.random() - 0.5) * 10
+			}}
+			rotation={{ x: Math.random() * Math.PI, y: Math.random() * Math.PI }}
+			scale={Math.random()}
+		/>
+	</Float>
 {/each}
