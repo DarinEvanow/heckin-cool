@@ -8,6 +8,7 @@
 	/**
 	 * Textures
 	 */
+
 	const textureLoader = new TextureLoader();
 	const matcapTexture = textureLoader.load('/textures/matcap.png');
 
