@@ -1,8 +1,9 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import { MeshMatcapMaterial, TextureLoader, TorusGeometry, Vector3 } from 'three';
 	import { FontLoader } from 'three/examples/jsm/loaders/FontLoader';
 	import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry';
-	import { Mesh, PerspectiveCamera, OrbitControls } from '@threlte/core';
+	import { Mesh, InstancedMesh, Instance, PerspectiveCamera, OrbitControls } from '@threlte/core';
 	import { Float } from '@threlte/extras';
 	import { cameraPosition } from '$lib/cameraStore';
 
@@ -39,7 +40,10 @@
 
 	const material = new MeshMatcapMaterial({ matcap: matcapTexture });
 	const donutGeometry = new TorusGeometry(0.3, 0.2, 20, 45);
-	cameraPosition.set(new Vector3(5, 5, 15));
+
+	onMount(() => {
+		cameraPosition.set(new Vector3(5, 5, 15));
+	});
 </script>
 
 <PerspectiveCamera position={$cameraPosition} fov={24} lookAt={{ x: 0, y: 0, z: 0 }}>
@@ -47,18 +51,19 @@
 </PerspectiveCamera>
 
 <Mesh geometry={textGeometry} {material} />
-{#each Array(300) as _}
-	<Float speed={2}>
-		<Mesh
-			geometry={donutGeometry}
-			{material}
-			position={{
-				x: (Math.random() - 0.5) * 20,
-				y: (Math.random() - 0.5) * 20,
-				z: (Math.random() - 0.5) * 20
-			}}
-			rotation={{ x: Math.random() * Math.PI, y: Math.random() * Math.PI }}
-			scale={Math.random()}
-		/>
-	</Float>
-{/each}
+
+<InstancedMesh geometry={donutGeometry} {material}>
+	{#each Array(300) as _}
+		<Float speed={2}>
+			<Instance
+				position={{
+					x: (Math.random() - 0.5) * 20,
+					y: (Math.random() - 0.5) * 20,
+					z: (Math.random() - 0.5) * 20
+				}}
+				rotation={{ x: Math.random() * Math.PI, y: Math.random() * Math.PI }}
+				scale={Math.random()}
+			/>
+		</Float>
+	{/each}
+</InstancedMesh>
