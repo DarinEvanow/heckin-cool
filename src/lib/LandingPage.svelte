@@ -3,23 +3,40 @@
 	import { MeshMatcapMaterial, TextureLoader, TorusGeometry, Vector3 } from 'three';
 	import { FontLoader } from 'three/examples/jsm/loaders/FontLoader';
 	import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry';
-	import { Mesh, InstancedMesh, Instance, PerspectiveCamera, OrbitControls } from '@threlte/core';
+	import {
+		Mesh,
+		InstancedMesh,
+		Instance,
+		PerspectiveCamera,
+		OrbitControls,
+		useTexture
+	} from '@threlte/core';
 	import { Float } from '@threlte/extras';
 	import { cameraPosition } from '$lib/cameraStore';
+
+	/**
+	 * Logic flags
+	 */
+	let allowRender = false;
 
 	/**
 	 * Textures
 	 */
 
-	const textureLoader = new TextureLoader();
-	const matcapTexture = textureLoader.load('/textures/matcap.png');
+	const matcapTexture = useTexture('/textures/matcap.png', {
+		onLoad: () => {
+			allowRender = true;
+			setTimeout(() => {
+				cameraPosition.set(new Vector3(5, 5, 15));
+			}, 200);
+		}
+	});
 
 	/**
 	 * Fonts
 	 */
 
 	const fontLoader = new FontLoader();
-
 	let textGeometry: TextGeometry;
 
 	fontLoader.load('/fonts/gentilis_regular.typeface.json', (font) => {
@@ -40,10 +57,6 @@
 
 	const material = new MeshMatcapMaterial({ matcap: matcapTexture });
 	const donutGeometry = new TorusGeometry(0.3, 0.2, 20, 45);
-
-	onMount(() => {
-		cameraPosition.set(new Vector3(5, 5, 15));
-	});
 </script>
 
 <PerspectiveCamera position={$cameraPosition} fov={24} lookAt={{ x: 0, y: 0, z: 0 }}>
@@ -52,18 +65,20 @@
 
 <Mesh geometry={textGeometry} {material} />
 
-<InstancedMesh geometry={donutGeometry} {material}>
-	{#each Array(300) as _}
-		<Float speed={2}>
-			<Instance
-				position={{
-					x: (Math.random() - 0.5) * 20,
-					y: (Math.random() - 0.5) * 20,
-					z: (Math.random() - 0.5) * 20
-				}}
-				rotation={{ x: Math.random() * Math.PI, y: Math.random() * Math.PI }}
-				scale={Math.random()}
-			/>
-		</Float>
-	{/each}
-</InstancedMesh>
+{#if allowRender}
+	<InstancedMesh geometry={donutGeometry} {material}>
+		{#each Array(300) as _}
+			<Float speed={2}>
+				<Instance
+					position={{
+						x: (Math.random() - 0.5) * 20,
+						y: (Math.random() - 0.5) * 20,
+						z: (Math.random() - 0.5) * 20
+					}}
+					rotation={{ x: Math.random() * Math.PI, y: Math.random() * Math.PI }}
+					scale={Math.random()}
+				/>
+			</Float>
+		{/each}
+	</InstancedMesh>
+{/if}
