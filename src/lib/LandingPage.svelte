@@ -1,6 +1,13 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { MeshMatcapMaterial, TextureLoader, TorusGeometry, Vector3 } from 'three';
+	import {
+		BoxGeometry,
+		ConeGeometry,
+		MeshMatcapMaterial,
+		TextureLoader,
+		TorusGeometry,
+		Vector3
+	} from 'three';
 	import { FontLoader } from 'three/examples/jsm/loaders/FontLoader';
 	import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry';
 	import {
@@ -56,6 +63,8 @@
 	});
 
 	const material = new MeshMatcapMaterial({ matcap: matcapTexture });
+	const boxGeometry = new BoxGeometry(0.8, 0.8, 0.8);
+	const coneGeometry = new ConeGeometry(0.3, 0.8, 30);
 	const donutGeometry = new TorusGeometry(0.3, 0.2, 20, 45);
 </script>
 
@@ -67,7 +76,39 @@
 
 {#if allowRender}
 	<InstancedMesh geometry={donutGeometry} {material}>
-		{#each Array(300) as _}
+		{#each Array(100) as _}
+			<Float speed={2}>
+				<Instance
+					position={{
+						x: (Math.random() - 0.5) * 20,
+						y: (Math.random() - 0.5) * 20,
+						z: (Math.random() - 0.5) * 20
+					}}
+					rotation={{ x: Math.random() * Math.PI, y: Math.random() * Math.PI }}
+					scale={Math.random()}
+				/>
+			</Float>
+		{/each}
+	</InstancedMesh>
+
+	<InstancedMesh geometry={boxGeometry} {material}>
+		{#each Array(100) as _}
+			<Float speed={2}>
+				<Instance
+					position={{
+						x: (Math.random() - 0.5) * 20,
+						y: (Math.random() - 0.5) * 20,
+						z: (Math.random() - 0.5) * 20
+					}}
+					rotation={{ x: Math.random() * Math.PI, y: Math.random() * Math.PI }}
+					scale={Math.random()}
+				/>
+			</Float>
+		{/each}
+	</InstancedMesh>
+
+	<InstancedMesh geometry={coneGeometry} {material}>
+		{#each Array(100) as _}
 			<Float speed={2}>
 				<Instance
 					position={{
