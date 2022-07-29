@@ -1,21 +1,13 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import {
-		BoxGeometry,
-		ConeGeometry,
-		MeshMatcapMaterial,
-		TextureLoader,
-		TorusGeometry,
-		Vector3
-	} from 'three';
+	import { BoxGeometry, ConeGeometry, MeshMatcapMaterial, TorusGeometry, Vector3 } from 'three';
 	import { FontLoader } from 'three/examples/jsm/loaders/FontLoader';
 	import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry';
 	import {
-		Mesh,
-		InstancedMesh,
 		Instance,
-		PerspectiveCamera,
+		InstancedMesh,
+		Mesh,
 		OrbitControls,
+		PerspectiveCamera,
 		useTexture
 	} from '@threlte/core';
 	import { Float } from '@threlte/extras';
@@ -24,7 +16,8 @@
 	/**
 	 * Logic flags
 	 */
-	let allowRender = false;
+
+	let shouldRender = false;
 
 	/**
 	 * Textures
@@ -32,7 +25,7 @@
 
 	const matcapTexture = useTexture('/textures/matcap.png', {
 		onLoad: () => {
-			allowRender = true;
+			shouldRender = true;
 			setTimeout(() => {
 				cameraPosition.set(new Vector3(5, 5, 15));
 			}, 200);
@@ -40,13 +33,13 @@
 	});
 
 	/**
-	 * Fonts
+	 * Font
 	 */
 
 	const fontLoader = new FontLoader();
 	let textGeometry: TextGeometry;
 
-	fontLoader.load('/fonts/gentilis_regular.typeface.json', (font) => {
+	fontLoader.load('/fonts/droid/droid_sans_regular.typeface.json', (font) => {
 		textGeometry = new TextGeometry("Heckin' Cool", {
 			font: font,
 			size: 0.5,
@@ -62,6 +55,10 @@
 		textGeometry.center();
 	});
 
+	/**
+	 * Material and Geometry
+	 */
+
 	const material = new MeshMatcapMaterial({ matcap: matcapTexture });
 	const boxGeometry = new BoxGeometry(0.8, 0.8, 0.8);
 	const coneGeometry = new ConeGeometry(0.3, 0.8, 30);
@@ -74,7 +71,7 @@
 
 <Mesh geometry={textGeometry} {material} />
 
-{#if allowRender}
+{#if shouldRender}
 	<InstancedMesh geometry={donutGeometry} {material}>
 		{#each Array(100) as _}
 			<Float speed={2}>
