@@ -1,9 +1,9 @@
 <script lang="ts">
-	import LandingPageWrapper from '$lib/LandingPageWrapper.svelte';
+	import LandingPage from '$lib/LandingPage.svelte';
 </script>
 
 <div>
-	<LandingPageWrapper />
+	<LandingPage />
 </div>
 
 <style>
