@@ -4,7 +4,9 @@
 
 	onMount(() => {
 		window.addEventListener('scroll', () => {
-			scrollY.set(window.scrollY);
+			scrollY.set(
+				(window.pageYOffset / (document.documentElement.scrollHeight - window.innerHeight)) * 2
+			);
 		});
 	});
 </script>
@@ -13,6 +15,6 @@
 
 <style>
 	#scroll-container {
-		height: 100vw;
+		height: 200vh;
 	}
 </style>
