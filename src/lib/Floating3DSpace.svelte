@@ -6,6 +6,13 @@
 	import { Float } from '@threlte/extras';
 	import { cameraPosition } from '$lib/cameraStore';
 	import { scrollY } from '$lib/positionStore';
+	import {
+		handleProjectsClick,
+		handleMusicClick,
+		handleGuyClick,
+		handleLinkPointerEnter,
+		handleLinkPointerLeave
+	} from '$lib/handlers';
 	import { browser } from '$app/env';
 
 	let innerWidth = 1;
@@ -163,21 +170,45 @@
 
 <Mesh geometry={titleGeometry} {material} />
 <Mesh geometry={seeSomeGeometry} {material} position={{ x: 0 + $scrollY * 10, y: 2, z: 0 }} />
-<Mesh geometry={projectsGeometry} {material} position={{ x: 0 - $scrollY * 10, y: -2, z: 0 }} />
+<Mesh
+	geometry={projectsGeometry}
+	{material}
+	position={{ x: 0 - $scrollY * 10, y: -2, z: 0 }}
+	interactive
+	on:click={handleProjectsClick}
+	on:pointerenter={handleLinkPointerEnter}
+	on:pointerleave={handleLinkPointerLeave}
+/>
 <Mesh
 	geometry={projectsUnderlineGeometry}
 	{material}
 	position={{ x: 0 - $scrollY * 10, y: -2.4, z: 0 }}
 />
 <Mesh geometry={hearSomeGeometry} {material} position={{ x: -10 + $scrollY * 10, y: 2, z: 0 }} />
-<Mesh geometry={musicGeometry} {material} position={{ x: 10 - $scrollY * 10, y: -2, z: 0 }} />
+<Mesh
+	geometry={musicGeometry}
+	{material}
+	position={{ x: 10 - $scrollY * 10, y: -2, z: 0 }}
+	interactive
+	on:click={handleMusicClick}
+	on:pointerenter={handleLinkPointerEnter}
+	on:pointerleave={handleLinkPointerLeave}
+/>
 <Mesh
 	geometry={musicUnderlineGeometry}
 	{material}
 	position={{ x: 10 - $scrollY * 10, y: -2.4, z: 0 }}
 />
 <Mesh geometry={madeByGeometry} {material} position={{ x: -20 + $scrollY * 10, y: 2, z: 0 }} />
-<Mesh geometry={guyGeometry} {material} position={{ x: 20 - $scrollY * 10, y: -2, z: 0 }} />
+<Mesh
+	geometry={guyGeometry}
+	{material}
+	position={{ x: 20 - $scrollY * 10, y: -2, z: 0 }}
+	interactive
+	on:click={handleGuyClick}
+	on:pointerenter={handleLinkPointerEnter}
+	on:pointerleave={handleLinkPointerLeave}
+/>
 <Mesh
 	geometry={guyUnderlineGeometry}
 	{material}
