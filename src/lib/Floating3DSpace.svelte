@@ -6,6 +6,7 @@
 	import { Float } from '@threlte/extras';
 	import { cameraPosition } from '$lib/cameraStore';
 	import { scrollY } from '$lib/positionStore';
+	import LinkText from '$lib/LinkText.svelte';
 	import { browser } from '$app/env';
 
 	let innerWidth = 1;
@@ -20,7 +21,9 @@
 	 * Logic flags
 	 */
 
-	let shouldRender = false;
+	let texturesLoaded = false;
+	let fontsLoaded = false;
+	$: shouldRender = texturesLoaded && fontsLoaded;
 
 	/**
 	 * Scale
@@ -33,7 +36,7 @@
 
 	const matcapTexture = useTexture('/textures/matcap.png', {
 		onLoad: () => {
-			shouldRender = true;
+			texturesLoaded = true;
 			setTimeout(() => {
 				cameraPosition.set(new Vector3(0, 0, 15));
 			}, 200);
@@ -92,6 +95,7 @@
 			bevelSegments: 5
 		});
 		projectsGeometry.center();
+		projectsGeometry.computeBoundingBox();
 
 		hearSomeGeometry = new TextGeometry('Hear some', {
 			font: font,
@@ -118,6 +122,7 @@
 			bevelSegments: 5
 		});
 		musicGeometry.center();
+		musicGeometry.computeBoundingBox();
 
 		madeByGeometry = new TextGeometry('Made by a', {
 			font: font,
@@ -144,6 +149,9 @@
 			bevelSegments: 5
 		});
 		guyGeometry.center();
+		guyGeometry.computeBoundingBox();
+
+		fontsLoaded = true;
 	});
 
 	/**
@@ -154,37 +162,37 @@
 	const boxGeometry = new BoxGeometry(0.8, 0.8, 0.8);
 	const coneGeometry = new ConeGeometry(0.3, 0.8, 30);
 	const donutGeometry = new TorusGeometry(0.3, 0.2, 20, 45);
-	const projectsUnderlineGeometry = new BoxGeometry(2, 0.1, 0.1);
-	const musicUnderlineGeometry = new BoxGeometry(1.4, 0.1, 0.1);
-	const guyUnderlineGeometry = new BoxGeometry(0.9, 0.1, 0.1);
 </script>
 
 <PerspectiveCamera position={$cameraPosition} fov={24} lookAt={{ x: 0, y: 0, z: 0 }} />
 
-<Mesh geometry={titleGeometry} {material} />
-<Mesh geometry={seeSomeGeometry} {material} position={{ x: 0 + $scrollY * 10, y: 2, z: 0 }} />
-<Mesh geometry={projectsGeometry} {material} position={{ x: 0 - $scrollY * 10, y: -2, z: 0 }} />
-<Mesh
-	geometry={projectsUnderlineGeometry}
-	{material}
-	position={{ x: 0 - $scrollY * 10, y: -2.4, z: 0 }}
-/>
-<Mesh geometry={hearSomeGeometry} {material} position={{ x: -10 + $scrollY * 10, y: 2, z: 0 }} />
-<Mesh geometry={musicGeometry} {material} position={{ x: 10 - $scrollY * 10, y: -2, z: 0 }} />
-<Mesh
-	geometry={musicUnderlineGeometry}
-	{material}
-	position={{ x: 10 - $scrollY * 10, y: -2.4, z: 0 }}
-/>
-<Mesh geometry={madeByGeometry} {material} position={{ x: -20 + $scrollY * 10, y: 2, z: 0 }} />
-<Mesh geometry={guyGeometry} {material} position={{ x: 20 - $scrollY * 10, y: -2, z: 0 }} />
-<Mesh
-	geometry={guyUnderlineGeometry}
-	{material}
-	position={{ x: 20 - $scrollY * 10, y: -2.4, z: 0 }}
-/>
-
 {#if shouldRender}
+	<Mesh geometry={titleGeometry} {material} />
+
+	<Mesh geometry={seeSomeGeometry} {material} position={{ x: 0 + $scrollY * 10, y: 2, z: 0 }} />
+	<LinkText
+		textGeometry={projectsGeometry}
+		{material}
+		position={{ x: 0 - $scrollY * 10, y: -2, z: 0 }}
+		link="https://www.github.com/DarinEvanow"
+	/>
+
+	<Mesh geometry={hearSomeGeometry} {material} position={{ x: -10 + $scrollY * 10, y: 2, z: 0 }} />
+	<LinkText
+		textGeometry={musicGeometry}
+		{material}
+		position={{ x: 10 - $scrollY * 10, y: -2, z: 0 }}
+		link="https://trashvampires.bandcamp.com/"
+	/>
+
+	<Mesh geometry={madeByGeometry} {material} position={{ x: -20 + $scrollY * 10, y: 2, z: 0 }} />
+	<LinkText
+		textGeometry={guyGeometry}
+		{material}
+		position={{ x: 20 - $scrollY * 10, y: -2, z: 0 }}
+		link="https://www.linkedin.com/in/darinevanow/"
+	/>
+
 	<InstancedMesh geometry={donutGeometry} {material}>
 		{#each Array(100) as _}
 			<Float speed={2}>
