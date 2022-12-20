@@ -7,7 +7,7 @@
 	import { cameraPosition } from '$lib/cameraStore';
 	import { scrollY } from '$lib/positionStore';
 	import LinkText from '$lib/LinkText.svelte';
-	import { browser } from '$app/env';
+	import { browser } from '$app/environment';
 
 	let innerWidth = 1;
 
